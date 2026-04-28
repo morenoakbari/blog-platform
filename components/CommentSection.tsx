@@ -27,78 +27,83 @@ export default function CommentSection({
     if (!content.trim()) return;
     setLoading(true);
     setError("");
-
     const res = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content, postId }),
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error);
-      setLoading(false);
-      return;
-    }
-
+    if (!res.ok) { setError(data.error); setLoading(false); return; }
     setComments([data, ...comments]);
     setContent("");
     setLoading(false);
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-8">
-      <h2 className="text-xl font-bold mb-6">
-        💬 Komentar ({comments.length})
+    <div>
+      <h2 className="text-lg font-medium text-gray-900 mb-8">
+        {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
       </h2>
 
-      {/* Form Komentar */}
+      {/* Form */}
       {session ? (
-        <div className="mb-6">
-          <textarea
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            rows={3}
-            placeholder="Tulis komentar..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? "Mengirim..." : "Kirim Komentar"}
-          </button>
+        <div className="mb-10">
+          <div className="flex gap-3">
+            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center shrink-0 mt-0.5">
+              <span className="text-white text-xs font-medium">
+                {session.user?.name?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1">
+              <textarea
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none text-gray-900 placeholder-gray-300"
+                rows={3}
+                placeholder="Share your thoughts..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+              {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+              <button
+                onClick={handleSubmit}
+                disabled={loading || !content.trim()}
+                className="mt-2 bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-800 disabled:opacity-40 transition-colors"
+              >
+                {loading ? "Posting..." : "Post comment"}
+              </button>
+            </div>
+          </div>
         </div>
       ) : (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-500">
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Login
-          </Link>{" "}
-          untuk meninggalkan komentar.
+        <div className="mb-10 p-4 border border-gray-100 rounded-lg">
+          <p className="text-sm text-gray-400">
+            <Link href="/login" className="text-gray-900 underline underline-offset-2">Sign in</Link> to leave a comment.
+          </p>
         </div>
       )}
 
-      {/* List Komentar */}
+      {/* Comments List */}
       {comments.length === 0 ? (
-        <p className="text-gray-400 text-sm">Belum ada komentar. Jadilah yang pertama!</p>
+        <p className="text-sm text-gray-300">No comments yet. Be the first!</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-8">
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b pb-4 last:border-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-medium text-sm">{comment.author.name}</span>
-                <span className="text-xs text-gray-400">
-                  {new Date(comment.createdAt).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
+            <div key={comment.id} className="flex gap-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
+                <span className="text-gray-600 text-xs font-medium">
+                  {comment.author.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <p className="text-gray-700 text-sm">{comment.content}</p>
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-900">{comment.author.name}</span>
+                  <span className="text-xs text-gray-300">
+                    {new Date(comment.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric", month: "short", year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
+              </div>
             </div>
           ))}
         </div>

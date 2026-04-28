@@ -1,72 +1,87 @@
 "use client";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const navItems = [
+  { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/posts", label: "My Posts" },
+  { href: "/dashboard/posts/new", label: "New Post" },
+];
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
+    if (status === "unauthenticated") router.push("/login");
   }, [status, router]);
 
   if (status === "loading") {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <Link href="/dashboard" className="text-xl font-bold text-blue-600">
-          Blog Dashboard
-        </Link>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">Halo, {session?.user?.name}!</span>
-          <Link href="/" className="text-sm text-gray-600 hover:text-blue-600">
-            Lihat Blog
+      {/* Top Nav */}
+      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-6 py-3.5 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-black rounded-md flex items-center justify-center">
+              <span className="text-white text-sm font-semibold">B</span>
+            </div>
+            <span className="font-medium text-gray-900 text-sm">blog-platform</span>
           </Link>
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="text-sm bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-xs text-gray-400 hover:text-gray-900 transition-colors">View Blog →</Link>
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-medium">
+                  {session?.user?.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                className="text-xs text-gray-400 hover:text-gray-900 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
-      {/* Sidebar + Content */}
-      <div className="flex">
-        <aside className="w-56 min-h-screen bg-white shadow-sm p-4 space-y-2">
-          <Link
-            href="/dashboard"
-            className="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 text-sm font-medium"
-          >
-            📊 Overview
-          </Link>
-          <Link
-            href="/dashboard/posts"
-            className="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 text-sm font-medium"
-          >
-            📝 My Posts
-          </Link>
-          <Link
-            href="/dashboard/posts/new"
-            className="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 text-sm font-medium"
-          >
-            ✏️ New Post
-          </Link>
+      <div className="max-w-5xl mx-auto px-6 py-8 flex gap-8">
+        {/* Sidebar */}
+        <aside className="w-44 shrink-0">
+          <nav className="flex flex-col gap-0.5">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-sm px-3 py-2 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-black text-white font-medium"
+                      : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
         </aside>
 
-        <main className="flex-1 p-6">{children}</main>
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>
   );

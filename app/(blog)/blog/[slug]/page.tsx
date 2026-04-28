@@ -4,7 +4,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import CommentSection from "@/components/CommentSection";
 
-// Tambahkan ini untuk SEO
 export async function generateMetadata({
   params,
 }: {
@@ -15,9 +14,7 @@ export async function generateMetadata({
     where: { slug },
     include: { author: true },
   });
-
   if (!post) return { title: "Post tidak ditemukan" };
-
   return {
     title: post.title,
     description: post.excerpt || post.content.slice(0, 160),
@@ -25,7 +22,6 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt || post.content.slice(0, 160),
       type: "article",
-      publishedTime: post.createdAt.toISOString(),
       authors: [post.author.name || "Unknown"],
     },
   };
@@ -37,11 +33,11 @@ export default async function BlogDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
       author: true,
+      categories: true,
       comments: {
         include: { author: true },
         orderBy: { createdAt: "desc" },
@@ -51,40 +47,75 @@ export default async function BlogDetailPage({
 
   if (!post || !post.published) notFound();
 
+  const readingTime = Math.ceil(post.content.split(" ").length / 200);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 py-5 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-blue-600">
-            📝 My Blog
+    <div className="min-h-screen bg-white">
+      {/* Navbar */}
+      <nav className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-sm z-50">
+        <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-black rounded-md flex items-center justify-center">
+              <span className="text-white text-sm font-semibold">B</span>
+            </div>
+            <span className="font-medium text-gray-900">blog-platform</span>
           </Link>
-          <Link href="/" className="text-sm text-gray-600 hover:text-blue-600">
-            ← Kembali
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+            ← Back
           </Link>
         </div>
-      </header>
+      </nav>
 
-      <main className="max-w-3xl mx-auto px-6 py-10">
-        <article className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-          <div className="flex items-center gap-3 text-sm text-gray-400 mb-8 pb-6 border-b">
-            <span>✍️ {post.author.name}</span>
-            <span>•</span>
-            <span>
-              {new Date(post.createdAt).toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+      {/* Article */}
+      <article className="max-w-3xl mx-auto px-6 py-16">
+        {/* Categories */}
+        {post.categories.length > 0 && (
+          <div className="flex gap-2 mb-5">
+            {post.categories.map((cat) => (
+              <span key={cat.id} className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">
+                {cat.name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Title */}
+        <h1 className="text-3xl font-medium text-gray-900 leading-snug mb-6">
+          {post.title}
+        </h1>
+
+        {/* Meta */}
+        <div className="flex items-center gap-3 pb-10 border-b border-gray-100 mb-10">
+          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+            <span className="text-white text-xs font-medium">
+              {post.author.name?.charAt(0).toUpperCase()}
             </span>
           </div>
-          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {post.content}
+          <div>
+            <p className="text-sm font-medium text-gray-900">{post.author.name}</p>
+            <p className="text-xs text-gray-400">
+              {new Date(post.createdAt).toLocaleDateString("id-ID", {
+                day: "numeric", month: "long", year: "numeric",
+              })} · {readingTime} min read
+            </p>
           </div>
-        </article>
+        </div>
 
+        {/* Content */}
+        <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-base">
+          {post.content}
+        </div>
+      </article>
+
+      {/* Divider */}
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="border-t border-gray-100" />
+      </div>
+
+      {/* Comments */}
+      <div className="max-w-3xl mx-auto px-6 py-12 pb-20">
         <CommentSection postId={post.id} initialComments={post.comments} />
-      </main>
+      </div>
     </div>
   );
 }
