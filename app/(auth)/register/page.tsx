@@ -47,6 +47,7 @@ export default function RegisterPage() {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
+              suppressHydrationWarning  // ← tambah ini
             />
           </div>
           <div>
@@ -57,6 +58,7 @@ export default function RegisterPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
+              suppressHydrationWarning  // ← tambah ini
             />
           </div>
           <div>
@@ -67,6 +69,8 @@ export default function RegisterPage() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
+              suppressHydrationWarning  // ← tambah ini
+
             />
           </div>
           <button

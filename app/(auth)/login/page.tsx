@@ -46,6 +46,8 @@ export default function LoginPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
+              suppressHydrationWarning  // ← tambah ini
+
             />
           </div>
           <div>
@@ -56,6 +58,7 @@ export default function LoginPage() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
+              suppressHydrationWarning  // ← tambah ini
             />
           </div>
           <button
