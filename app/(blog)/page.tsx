@@ -1,3 +1,5 @@
+export const revalidate = 0; // selalu fetch data terbaru
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 

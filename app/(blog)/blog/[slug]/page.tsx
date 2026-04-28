@@ -1,3 +1,6 @@
+export const revalidate = 0;
+
+
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
