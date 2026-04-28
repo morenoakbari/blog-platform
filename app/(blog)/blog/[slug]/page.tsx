@@ -6,10 +6,11 @@ import CommentSection from "@/components/CommentSection";
 export default async function BlogDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       author: true,
       comments: {
