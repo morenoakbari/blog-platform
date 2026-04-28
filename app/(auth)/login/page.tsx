@@ -19,23 +19,21 @@ export default function LoginPage() {
       password: form.password,
       redirect: false,
     });
-    if (res?.error) { setError("Invalid email or password."); setLoading(false); return; }
+    if (res?.error) { setError("Email atau password salah."); setLoading(false); return; }
     router.push("/dashboard");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-lg font-semibold">B</span>
           </div>
-          <h1 className="text-xl font-medium text-gray-900">Welcome back</h1>
-          <p className="text-sm text-gray-400 mt-1">Sign in to your account</p>
+          <h1 className="text-xl font-medium text-gray-900">Selamat datang kembali</h1>
+          <p className="text-sm text-gray-400 mt-1">Masuk ke akun Anda</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
           {error && (
             <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-4">
@@ -49,7 +47,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-                placeholder="you@email.com"
+                placeholder="anda@email.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
@@ -57,7 +55,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Password</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Kata sandi</label>
               <input
                 type="password"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
@@ -73,14 +71,14 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors mt-2"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Memasukkan..." : "Masuk"}
             </button>
           </form>
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-4">
-          Don't have an account?{" "}
-          <Link href="/register" className="text-gray-900 underline underline-offset-2">Register</Link>
+          Belum punya akun?{" "}
+          <Link href="/register" className="text-gray-900 underline underline-offset-2">Daftar</Link>
         </p>
       </div>
     </div>

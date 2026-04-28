@@ -27,3 +27,13 @@ body {
   background: #0a0a0a;
   color: #ffffff;
 }
+
+/* Responsive text adjustments (optional) */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem !important;
+  }
+  .prose {
+    font-size: 0.95rem;
+  }
+}

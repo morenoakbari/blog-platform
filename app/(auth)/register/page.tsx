@@ -30,8 +30,8 @@ export default function RegisterPage() {
           <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-lg font-semibold">B</span>
           </div>
-          <h1 className="text-xl font-medium text-gray-900">Create account</h1>
-          <p className="text-sm text-gray-400 mt-1">Start writing today</p>
+          <h1 className="text-xl font-medium text-gray-900">Buat akun baru</h1>
+          <p className="text-sm text-gray-400 mt-1">Mulai menulis hari ini</p>
         </div>
 
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
@@ -43,7 +43,7 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Full Name</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Nama lengkap</label>
               <input
                 type="text"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
@@ -59,7 +59,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-                placeholder="you@email.com"
+                placeholder="anda@email.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
@@ -67,11 +67,11 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Password</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1.5">Kata sandi</label>
               <input
                 type="password"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-                placeholder="Min. 8 characters"
+                placeholder="Minimal 8 karakter"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
@@ -83,14 +83,14 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors mt-2"
             >
-              {loading ? "Creating account..." : "Create account"}
+              {loading ? "Membuat akun..." : "Daftar"}
             </button>
           </form>
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-4">
-          Already have an account?{" "}
-          <Link href="/login" className="text-gray-900 underline underline-offset-2">Sign in</Link>
+          Sudah punya akun?{" "}
+          <Link href="/login" className="text-gray-900 underline underline-offset-2">Masuk</Link>
         </p>
       </div>
     </div>

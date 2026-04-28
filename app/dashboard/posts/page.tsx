@@ -19,7 +19,7 @@ export default function PostsPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this post?")) return;
+    if (!confirm("Hapus artikel ini?")) return;
     await fetch(`/api/posts/${id}`, { method: "DELETE" });
     setPosts(posts.filter((p) => p.id !== id));
   };
@@ -32,42 +32,50 @@ export default function PostsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
         <div>
-          <h1 className="text-xl font-medium text-gray-900">My Posts</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{posts.length} total posts</p>
+          <h1 className="text-xl font-medium text-gray-900">Artikel Saya</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Total {posts.length} artikel</p>
         </div>
-        <Link href="/dashboard/posts/new" className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
-          + New Post
+        <Link href="/dashboard/posts/new" className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-center">
+          + Tulisan Baru
         </Link>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
         {posts.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-gray-300 mb-3">No posts yet</p>
-            <Link href="/dashboard/posts/new" className="text-sm text-gray-900 underline underline-offset-2">Write your first post →</Link>
+            <p className="text-sm text-gray-300 mb-3">Belum ada artikel</p>
+            <Link href="/dashboard/posts/new" className="text-sm text-gray-900 underline underline-offset-2">Tulis artikel pertama →</Link>
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
             {posts.map((post) => (
-              <div key={post.id} className="px-5 py-4 flex items-center gap-4">
-                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${post.published ? "bg-green-400" : "bg-amber-400"}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
-                  <p className="text-xs text-gray-300 mt-0.5">/{post.slug}</p>
+              <div key={post.id} className="px-4 sm:px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${post.published ? "bg-green-400" : "bg-amber-400"}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
+                    <p className="text-xs text-gray-300 truncate">/blog/{post.slug}</p>
+                  </div>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
-                  post.published ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600"
-                }`}>
-                  {post.published ? "Published" : "Draft"}
-                </span>
-                <p className="text-xs text-gray-300 shrink-0 hidden sm:block">
-                  {new Date(post.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                </p>
-                <div className="flex items-center gap-3 shrink-0">
-                  <Link href={`/dashboard/posts/${post.id}/edit`} className="text-xs text-gray-400 hover:text-gray-900 transition-colors">Edit</Link>
-                  <button onClick={() => handleDelete(post.id)} className="text-xs text-red-300 hover:text-red-500 transition-colors">Delete</button>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0">
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    post.published ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600"
+                  }`}>
+                    {post.published ? "Terbit" : "Draf"}
+                  </span>
+                  <p className="text-xs text-gray-300 hidden sm:block">
+                    {new Date(post.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Link href={`/dashboard/posts/${post.id}/edit`} className="text-xs text-gray-400 hover:text-gray-900 transition-colors">
+                      Edit
+                    </Link>
+                    <button onClick={() => handleDelete(post.id)} className="text-xs text-red-300 hover:text-red-500 transition-colors">
+                      Hapus
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
