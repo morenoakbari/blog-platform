@@ -1,4 +1,4 @@
-export const revalidate = 0;
+export const revalidate = 0; // selalu fetch data terbaru
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
