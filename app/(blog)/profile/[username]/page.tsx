@@ -1,0 +1,79 @@
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
+  const { username } = await params;
+
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: {
+      posts: {
+        where: { published: true },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!user) notFound();
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-10">
+          <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center text-xl font-medium">
+            {user.name?.charAt(0).toUpperCase()}
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-medium text-gray-900">
+              {user.name}
+            </h1>
+
+            <p className="text-sm text-gray-400">
+              @{user.username}
+            </p>
+
+            {user.bio && (
+              <p className="text-sm text-gray-600 mt-1">
+                {user.bio}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Posts */}
+        <div className="space-y-4">
+          {user.posts.length === 0 ? (
+            <p className="text-gray-400 text-sm">
+              Belum ada artikel.
+            </p>
+          ) : (
+            user.posts.map((post) => (
+              <Link
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="block border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition"
+              >
+                <h2 className="font-medium text-gray-900">
+                  {post.title}
+                </h2>
+
+                {post.excerpt && (
+                  <p className="text-sm text-gray-400 mt-1">
+                    {post.excerpt}
+                  </p>
+                )}
+              </Link>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
