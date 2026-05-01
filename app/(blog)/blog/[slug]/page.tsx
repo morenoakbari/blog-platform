@@ -70,6 +70,7 @@ export default async function BlogDetailPage({
       </nav>
 
       {/* Article */}
+      {/* Article */}
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {post.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
@@ -101,9 +102,18 @@ export default async function BlogDetailPage({
           </div>
         </div>
 
-        <div className="prose prose-gray max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
-          {post.content}
-        </div>
+        {/* ✅ TAMBAHAN: Cover Image */}
+        {post.coverImage && (
+          <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden mb-10 bg-gray-100">
+            <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+
+        {/* ✅ TAMBAHAN: Render HTML dari Tiptap (bukan plain text) */}
+        <div
+          className="prose prose-gray max-w-none text-gray-700 leading-relaxed text-sm sm:text-base"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
       </article>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6">

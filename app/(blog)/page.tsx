@@ -65,21 +65,21 @@ export default async function HomePage() {
                     {post.title}
                   </p>
                   {post.excerpt && (
-                    <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">
-                      {post.excerpt}
-                    </p>
+                    <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{post.excerpt}</p>
                   )}
-                </div>
-                <div className="text-left sm:text-right shrink-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-300 mt-2">
                     {new Date(post.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                      day: "numeric", month: "short", year: "numeric",
+                    })} · {post.author.name}
                   </p>
-                  <p className="text-xs text-gray-300 mt-1">{post.author.name}</p>
                 </div>
+
+                {/* Cover Image Thumbnail */}
+                {post.coverImage && (
+                  <div className="shrink-0 w-full sm:w-24 h-20 sm:h-16 rounded-lg overflow-hidden bg-gray-100">
+                    <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+                  </div>
+                )}
               </Link>
             ))}
           </div>

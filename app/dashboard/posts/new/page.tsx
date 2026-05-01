@@ -1,10 +1,28 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import CoverImageUpload from "@/components/CoverImageUpload";
+
+const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="border border-gray-200 rounded-lg h-48 flex items-center justify-center">
+      <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
+    </div>
+  ),
+});
 
 export default function NewPostPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ title: "", slug: "", excerpt: "", content: "", published: false });
+  const [form, setForm] = useState({
+    title: "",
+    slug: "",
+    excerpt: "",
+    content: "",
+    coverImage: "",
+    published: false,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,15 +43,15 @@ export default function NewPostPage() {
       body: JSON.stringify({ ...form, published }),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error || "Terjadi kesalahan"); setLoading(false); return; }
+    if (!res.ok) { setError(data.error || "Something went wrong"); setLoading(false); return; }
     router.push("/dashboard/posts");
   };
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-medium text-gray-900">Tulisan Baru</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Buat dan terbitkan artikel</p>
+        <h1 className="text-xl font-medium text-gray-900">New Post</h1>
+        <p className="text-sm text-gray-400 mt-0.5">Write and publish your article</p>
       </div>
 
       {error && (
@@ -42,77 +60,82 @@ export default function NewPostPage() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-100 rounded-xl p-4 sm:p-6 space-y-5">
+      <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-5">
+        {/* Cover Image */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Judul</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Cover Image</label>
+          <CoverImageUpload
+            value={form.coverImage}
+            onChange={(url) => setForm({ ...form, coverImage: url })}
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Title</label>
           <input
             type="text"
             className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-            placeholder="Judul artikel Anda..."
+            placeholder="Your article title..."
             value={form.title}
             onChange={handleTitleChange}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Slug (URL)</label>
-          <div className="flex flex-col sm:flex-row sm:items-center border border-gray-200 rounded-lg overflow-hidden focus-within:border-gray-400 transition-colors">
-            <span className="px-3 py-2 text-xs text-gray-300 bg-gray-50 border-b sm:border-b-0 sm:border-r border-gray-200">
-              blog-platform/blog/
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Slug</label>
+          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:border-gray-400 transition-colors">
+            <span className="px-3 py-2.5 text-xs text-gray-300 bg-gray-50 border-r border-gray-200">
+              moreno.blog/blog/
             </span>
             <input
               type="text"
               className="flex-1 px-3 py-2.5 text-sm focus:outline-none placeholder-gray-300"
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              placeholder="slug-artikel"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Ringkasan (Excerpt)</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Excerpt</label>
           <input
             type="text"
             className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-            placeholder="Deskripsi singkat artikel..."
+            placeholder="Short description of your article..."
             value={form.excerpt}
             onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Konten</label>
-          <textarea
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-3 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none placeholder-gray-300 leading-relaxed"
-            rows={16}
-            placeholder="Tulis artikel Anda di sini..."
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
+          <label className="block text-xs font-medium text-gray-500 mb-1.5">Content</label>
+          <RichTextEditor
+            content={form.content}
+            onChange={(content) => setForm({ ...form, content })}
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2 border-t border-gray-50">
+        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
           <button
             onClick={() => router.back()}
-            className="text-sm text-gray-400 hover:text-gray-900 transition-colors order-2 sm:order-1"
+            className="text-sm text-gray-400 hover:text-gray-900 transition-colors"
           >
-            Batal
+            Cancel
           </button>
-          <div className="flex gap-3 order-1 sm:order-2">
+          <div className="flex gap-3">
             <button
               onClick={() => handleSubmit(false)}
               disabled={loading}
               className="text-sm border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-700"
             >
-              Simpan Draf
+              Save Draft
             </button>
             <button
               onClick={() => handleSubmit(true)}
               disabled={loading}
               className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
             >
-              {loading ? "Menerbitkan..." : "Terbitkan"}
+              {loading ? "Publishing..." : "Publish"}
             </button>
           </div>
         </div>
