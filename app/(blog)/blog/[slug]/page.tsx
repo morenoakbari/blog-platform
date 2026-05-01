@@ -1,11 +1,11 @@
 export const revalidate = 0;
 
-
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
 import CommentSection from "@/components/CommentSection";
+import LikeButton from "@/components/LikeButton";
 
 export async function generateMetadata({
   params,
@@ -13,11 +13,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+
   const post = await prisma.post.findUnique({
     where: { slug },
     include: { author: true },
   });
-  if (!post) return { title: "Postingan tidak ditemukan" };
+
+  if (!post) {
+    return { title: "Postingan tidak ditemukan" };
+  }
+
   return {
     title: post.title,
     description: post.excerpt || post.content.slice(0, 160),
@@ -36,11 +41,13 @@ export default async function BlogDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
       author: true,
       categories: true,
+      likes: true,
       comments: {
         include: { author: true },
         orderBy: { createdAt: "desc" },
@@ -63,19 +70,25 @@ export default async function BlogDetailPage({
             </div>
             <span className="font-medium text-gray-900">blog-platform</span>
           </Link>
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+
+          <Link
+            href="/"
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          >
             ← Kembali
           </Link>
         </div>
       </nav>
 
       {/* Article */}
-      {/* Article */}
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {post.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
             {post.categories.map((cat) => (
-              <span key={cat.id} className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">
+              <span
+                key={cat.id}
+                className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full"
+              >
                 {cat.name}
               </span>
             ))}
@@ -86,42 +99,67 @@ export default async function BlogDetailPage({
           {post.title}
         </h1>
 
+        {/* Author */}
         <div className="flex flex-wrap items-center gap-3 pb-8 border-b border-gray-100 mb-8">
           <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
             <span className="text-white text-xs font-medium">
               {post.author.name?.charAt(0).toUpperCase()}
             </span>
           </div>
+
           <div>
-            <p className="text-sm font-medium text-gray-900">{post.author.name}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {post.author.name}
+            </p>
+
             <p className="text-xs text-gray-400">
               {new Date(post.createdAt).toLocaleDateString("id-ID", {
-                day: "numeric", month: "long", year: "numeric",
-              })} · {readingTime} menit baca
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}{" "}
+              · {readingTime} menit baca
             </p>
           </div>
         </div>
 
-        {/* ✅ TAMBAHAN: Cover Image */}
+        {/* Cover Image */}
         {post.coverImage && (
           <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden mb-10 bg-gray-100">
-            <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+            <img
+              src={post.coverImage}
+              alt={post.title}
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
 
-        {/* ✅ TAMBAHAN: Render HTML dari Tiptap (bukan plain text) */}
+        {/* Content */}
         <div
           className="prose prose-gray max-w-none text-gray-700 leading-relaxed text-sm sm:text-base"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </article>
 
+      {/* Like Button */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-8">
+        <LikeButton
+          postId={post.id}
+          initialCount={post.likes.length}
+        />
+      </div>
+
+      {/* Divider */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="border-t border-gray-100" />
       </div>
 
+      {/* Comments */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 pb-20">
-        <CommentSection postId={post.id} initialComments={post.comments} />
+        <CommentSection
+          postId={post.id}
+          initialComments={post.comments}
+        />
       </div>
     </div>
   );
