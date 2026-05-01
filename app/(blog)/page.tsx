@@ -22,8 +22,26 @@ export default async function HomePage() {
             <span className="font-medium text-gray-900">blog-platform</span>
           </Link>
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Artikel</Link>
-            <Link href="/dashboard" className="text-sm bg-black text-white px-3 py-1.5 rounded-md hover:bg-gray-800 transition-colors">Dashboard</Link>
+            <Link
+              href="/"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Artikel
+            </Link>
+
+            <Link
+              href="/profile/abc"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Profile
+            </Link>
+
+            <Link
+              href="/dashboard"
+              className="text-sm bg-black text-white px-3 py-1.5 rounded-md hover:bg-gray-800 transition-colors"
+            >
+              Dashboard
+            </Link>
           </div>
         </div>
       </nav>
