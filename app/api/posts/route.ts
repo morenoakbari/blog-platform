@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -19,14 +20,19 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  
-  console.log("SESSION:", JSON.stringify(session)); // ← tambah ini
-  
+
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { title, content, excerpt, slug, published } = await req.json();
+  const {
+    title,
+    content,
+    excerpt,
+    slug,
+    coverImage,
+    published
+  } = await req.json();
 
   const post = await prisma.post.create({
     data: {
@@ -34,8 +40,11 @@ export async function POST(req: Request) {
       content,
       excerpt,
       slug,
+      coverImage,
       published,
-      author: { connect: { id: session.user.id } },
+      author: {
+        connect: { id: session.user.id },
+      },
     },
   });
 
