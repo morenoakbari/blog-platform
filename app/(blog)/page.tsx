@@ -2,8 +2,11 @@ export const revalidate = 0; // selalu fetch data terbaru
 
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export default async function HomePage() {
+  const session = await getServerSession(authOptions);
   const posts = await prisma.post.findMany({
     where: { published: true },
     include: { author: true, categories: true },
@@ -29,12 +32,14 @@ export default async function HomePage() {
               Artikel
             </Link>
 
-            <Link
-              href="/profile/abc"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              Profile
-            </Link>
+            {session?.user && (
+              <Link
+                href={`/profile/${(session.user as any).username ?? session.user.id}`}
+                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                Profile
+              </Link>
+            )}
 
             <Link
               href="/dashboard"

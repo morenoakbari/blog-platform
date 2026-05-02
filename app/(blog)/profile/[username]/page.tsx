@@ -14,8 +14,13 @@ export default async function ProfilePage({
 
     const session = await getServerSession(authOptions);
 
-    const user = await prisma.user.findUnique({
-        where: { username },
+    const user = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { username: username },
+                { id: username },
+            ],
+        },
         include: {
             posts: {
                 where: { published: true },
