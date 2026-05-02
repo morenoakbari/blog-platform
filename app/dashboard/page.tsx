@@ -1,4 +1,4 @@
-export const revalidate = 0; // selalu fetch data terbaru
+export const revalidate = 0;
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -22,52 +22,84 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div>
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-xl font-medium text-gray-900">Halo, {session.user?.name}!</h1>
-        <p className="text-sm text-gray-400 mt-1">Ringkasan aktivitas blog Anda.</p>
+    <div className="animate-fade-up">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          Halo, {session.user?.name}!
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Ringkasan aktivitas blog Anda.
+        </p>
       </div>
 
-      {/* Stats - grid responsif: di mobile 1 kolom, sm:3 kolom */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
         {[
-          { label: "Total Artikel", value: totalPosts, color: "text-gray-900" },
-          { label: "Terbit", value: publishedPosts, color: "text-green-600" },
-          { label: "Draf", value: draftPosts, color: "text-amber-500" },
+          { label: "Total Artikel", value: totalPosts, color: "text-gray-900 dark:text-white" },
+          { label: "Terbit", value: publishedPosts, color: "text-emerald-600 dark:text-emerald-400" },
+          { label: "Draf", value: draftPosts, color: "text-amber-600 dark:text-amber-400" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white border border-gray-100 rounded-xl p-5">
-            <p className="text-xs text-gray-400 mb-2">{stat.label}</p>
-            <p className={`text-3xl font-medium ${stat.color}`}>{stat.value}</p>
+          <div
+            key={stat.label}
+            className="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-light)] p-6 shadow-sm hover:shadow-md transition"
+          >
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+              {stat.label}
+            </p>
+            <p className={`text-4xl font-bold ${stat.color}`}>{stat.value}</p>
           </div>
         ))}
       </div>
 
       {/* Recent Posts */}
-      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-50 flex flex-wrap justify-between items-center gap-2">
-          <p className="text-sm font-medium text-gray-900">Artikel Terbaru</p>
-          <Link href="/dashboard/posts/new" className="text-xs bg-black text-white px-3 py-1.5 rounded-md hover:bg-gray-800 transition-colors">
+      <div className="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-light)] overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-[var(--border-light)] flex flex-wrap justify-between items-center gap-3">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">📄 Artikel Terbaru</h2>
+          <Link
+            href="/dashboard/posts/new"
+            className="text-xs bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-3 py-1.5 rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-sm"
+          >
             + Tulisan Baru
           </Link>
         </div>
         {recentPosts.length === 0 ? (
-          <div className="px-5 py-10 text-center">
-            <p className="text-sm text-gray-300 mb-3">Belum ada artikel</p>
-            <Link href="/dashboard/posts/new" className="text-sm text-gray-900 underline underline-offset-2">Tulis artikel pertama →</Link>
+          <div className="px-6 py-12 text-center">
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">Belum ada artikel</p>
+            <Link
+              href="/dashboard/posts/new"
+              className="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+            >
+              Tulis artikel pertama →
+            </Link>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-[var(--border-light)]">
             {recentPosts.map((post) => (
-              <div key={post.id} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div
+                key={post.id}
+                className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition"
+              >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${post.published ? "bg-green-400" : "bg-amber-400"}`} />
-                  <p className="text-sm text-gray-700 truncate">{post.title}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <p className="text-xs text-gray-300">
-                    {new Date(post.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                  <div
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      post.published ? "bg-emerald-500" : "bg-amber-500"
+                    }`}
+                  />
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+                    {post.title}
                   </p>
-                  <Link href={`/dashboard/posts/${post.id}/edit`} className="text-xs text-gray-400 hover:text-gray-900 transition-colors">
+                </div>
+                <div className="flex items-center gap-4 shrink-0 text-xs">
+                  <span className="text-gray-400 dark:text-gray-500">
+                    {new Date(post.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </span>
+                  <Link
+                    href={`/dashboard/posts/${post.id}/edit`}
+                    className="text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                  >
                     Edit
                   </Link>
                 </div>

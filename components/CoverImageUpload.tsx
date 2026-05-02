@@ -1,7 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import Image from "next/image";
 
 type Props = {
   value: string;
@@ -51,37 +50,37 @@ export default function CoverImageUpload({ value, onChange }: Props) {
   return (
     <div>
       {value ? (
-        <div className="relative rounded-lg overflow-hidden border border-gray-200">
+        <div className="relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm group">
           <img src={value} alt="Cover" className="w-full h-48 object-cover" />
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-2 right-2 bg-black/60 text-white text-xs px-3 py-1.5 rounded-md hover:bg-black transition-colors"
+            className="absolute top-3 right-3 bg-black/70 hover:bg-black text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm transition"
           >
-            Remove
+            Hapus
           </button>
         </div>
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all"
+          className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-all"
         >
           {uploading ? (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
-              <p className="text-sm text-gray-400">Uploading...</p>
+              <div className="w-6 h-6 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin" />
+              <p className="text-sm text-gray-500">Mengunggah...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <p className="text-2xl">🖼️</p>
-              <p className="text-sm font-medium text-gray-600">Click to upload cover image</p>
-              <p className="text-xs text-gray-300">PNG, JPG, WebP — max 5MB</p>
+              <span className="text-3xl">🖼️</span>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Klik untuk unggah gambar sampul</p>
+              <p className="text-xs text-gray-400">PNG, JPG, WebP — maks 5MB</p>
             </div>
           )}
         </div>
       )}
 
-      {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
+      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
 
       <input
         ref={inputRef}

@@ -1,21 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  --background: #faf9f8;   /* off-white background */
+  --foreground: #1a1a1a;
+  --card-bg: #ffffff;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border-light: #f0f0f0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0f0f0f;
     --foreground: #ededed;
+    --card-bg: #1a1a1a;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --border-light: #2a2a2a;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -24,43 +32,47 @@ body {
 }
 
 ::selection {
-  background: #0a0a0a;
-  color: #ffffff;
+  background: var(--accent);
+  color: white;
 }
 
-/* Responsive text adjustments (optional) */
-@media (max-width: 640px) {
-  h1 {
-    font-size: 2rem !important;
-  }
-  .prose {
-    font-size: 0.95rem;
-  }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--border-light);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
-/* Tiptap Editor Styles */
-.ProseMirror p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #d1d5db;
-  pointer-events: none;
-  height: 0;
+/* Prose styles untuk konten blog (dipercantik) */
+.prose {
+  color: var(--foreground);
+  max-width: 100%;
 }
-
-.ProseMirror:focus {
-  outline: none;
+.prose h1, .prose h2, .prose h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
+.prose h1 { font-size: 1.75rem; margin-top: 2rem; margin-bottom: 1rem; }
+.prose h2 { font-size: 1.5rem; margin-top: 1.75rem; margin-bottom: 0.75rem; }
+.prose p { line-height: 1.7; margin: 1rem 0; }
+.prose a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border 0.2s; }
+.prose a:hover { border-bottom-color: var(--accent); }
+.prose blockquote { border-left: 4px solid var(--accent); background: var(--background); padding: 1rem 1.5rem; border-radius: 12px; font-style: italic; }
+.prose code { background: #eef2ff; color: #1e40af; padding: 0.2rem 0.4rem; border-radius: 8px; font-size: 0.85em; }
+.dark .prose code { background: #2d2d2d; color: #cbd5e1; }
+.prose pre { background: #1e1e1e; border-radius: 16px; padding: 1rem; overflow-x: auto; }
+.prose img { border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-.prose h1 { font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 0.75rem; }
-.prose h2 { font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
-.prose h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
-.prose p { margin: 0.5rem 0; }
-.prose ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
-.prose ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
-.prose blockquote { border-left: 3px solid #e5e7eb; padding-left: 1rem; color: #6b7280; margin: 1rem 0; }
-.prose code { background: #f3f4f6; padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.85em; }
-.prose pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
-.prose pre code { background: none; padding: 0; color: inherit; }
-.prose a { color: #2563eb; text-decoration: underline; }
-.prose img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
-.prose strong { font-weight: 600; }
+/* Animasi subtle */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.4s ease-out forwards;
+}

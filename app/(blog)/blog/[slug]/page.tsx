@@ -6,165 +6,92 @@ import { Metadata } from "next";
 import Link from "next/link";
 import CommentSection from "@/components/CommentSection";
 import LikeButton from "@/components/LikeButton";
+import SearchUser from "@/components/SearchUser";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-
-  const post = await prisma.post.findUnique({
-    where: { slug },
-    include: { author: true },
-  });
-
-  if (!post) {
-    return { title: "Postingan tidak ditemukan" };
-  }
-
-  return {
-    title: post.title,
-    description: post.excerpt || post.content.slice(0, 160),
-    openGraph: {
-      title: post.title,
-      description: post.excerpt || post.content.slice(0, 160),
-      type: "article",
-      authors: [post.author.name || "Anonim"],
-    },
-  };
+  const post = await prisma.post.findUnique({ where: { slug }, include: { author: true } });
+  if (!post) return { title: "Not Found" };
+  return { title: post.title, description: post.excerpt || post.content.slice(0, 160) };
 }
 
-export default async function BlogDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: {
-      author: true,
-      categories: true,
-      likes: true,
-      comments: {
-        include: { author: true },
-        orderBy: { createdAt: "desc" },
-      },
-    },
+    include: { author: true, categories: true, likes: true, comments: { include: { author: true }, orderBy: { createdAt: "desc" } } },
   });
-
   if (!post || !post.published) notFound();
-
   const readingTime = Math.ceil(post.content.split(" ").length / 200);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navbar */}
-      <nav className="border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-sm z-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 bg-black rounded-md flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">B</span>
+    <div className="min-h-screen bg-[var(--background)]">
+      {/* Navbar dengan search responsif */}
+      <nav className="sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-[var(--border-light)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 shrink-0 group self-start sm:self-auto">
+            <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xs font-bold">B</span>
             </div>
-            <span className="font-medium text-gray-900">blog-platform</span>
+            <span className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">blog-platform</span>
           </Link>
 
-          <Link
-            href="/"
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-          >
+          <div className="w-full sm:flex-1 sm:max-w-md">
+            <SearchUser />
+          </div>
+
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition self-end sm:self-auto">
             ← Kembali
           </Link>
         </div>
       </nav>
 
-      {/* Article */}
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         {post.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-5">
+          <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
             {post.categories.map((cat) => (
-              <span
-                key={cat.id}
-                className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full"
-              >
+              <span key={cat.id} className="text-[11px] sm:text-xs font-medium bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 px-2.5 sm:px-3 py-1 rounded-full">
                 {cat.name}
               </span>
             ))}
           </div>
         )}
 
-        <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 leading-snug mb-6">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
           {post.title}
         </h1>
 
-        {/* Author */}
-        <div className="flex flex-wrap items-center gap-3 pb-8 border-b border-gray-100 mb-8">
+        <div className="flex flex-wrap items-center gap-4 mt-6 sm:mt-8 pb-6 sm:pb-8 border-b border-[var(--border-light)] mb-6 sm:mb-8">
           <Link href={`/profile/${(post.author as any).username ?? post.author.id}`}>
-            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:opacity-80 transition-opacity">
-              <span className="text-white text-xs font-medium">
-                {post.author.name?.charAt(0).toUpperCase()}
-              </span>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center font-bold hover:scale-105 transition">
+              {post.author.name?.charAt(0).toUpperCase()}
             </div>
           </Link>
-
           <div>
-            <Link
-              href={`/profile/${(post.author as any).username ?? post.author.id}`}
-              className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
-            >
+            <Link href={`/profile/${(post.author as any).username ?? post.author.id}`} className="font-semibold text-gray-900 dark:text-white hover:text-indigo-600 transition">
               {post.author.name}
             </Link>
-
-            <p className="text-xs text-gray-400">
-              {new Date(post.createdAt).toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}{" "}
-              · {readingTime} menit baca
-            </p>
+            <div className="text-xs text-gray-400">
+              {new Date(post.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · {readingTime} menit baca
+            </div>
           </div>
         </div>
 
-        {/* Cover Image */}
         {post.coverImage && (
-          <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden mb-10 bg-gray-100">
-            <img
-              src={post.coverImage}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
+          <div className="rounded-xl sm:rounded-2xl overflow-hidden mb-8 sm:mb-10 shadow-md">
+            <img src={post.coverImage} alt={post.title} className="w-full h-auto object-cover max-h-96" />
           </div>
         )}
 
-        {/* Content */}
-        <div
-          className="prose prose-gray max-w-none text-gray-700 leading-relaxed text-sm sm:text-base"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose prose-sm sm:prose-base lg:prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
 
-      {/* Like Button */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-8">
-        <LikeButton
-          postId={post.id}
-          initialCount={post.likes.length}
-        />
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-6">
+        <LikeButton postId={post.id} initialCount={post.likes.length} />
       </div>
 
-      {/* Divider */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <div className="border-t border-gray-100" />
-      </div>
-
-      {/* Comments */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 pb-20">
-        <CommentSection
-          postId={post.id}
-          initialComments={post.comments}
-        />
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-16">
+        <CommentSection postId={post.id} initialComments={post.comments} />
       </div>
     </div>
   );

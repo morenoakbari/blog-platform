@@ -7,8 +7,8 @@ import CoverImageUpload from "@/components/CoverImageUpload";
 const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
   ssr: false,
   loading: () => (
-    <div className="border border-gray-200 rounded-lg h-48 flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
+    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl h-48 flex items-center justify-center bg-[var(--card-bg)]">
+      <div className="w-5 h-5 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin" />
     </div>
   ),
 });
@@ -27,7 +27,10 @@ export default function NewPostPage() {
   const [error, setError] = useState("");
 
   const generateSlug = (title: string) =>
-    title.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "-");
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, "-");
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -43,27 +46,33 @@ export default function NewPostPage() {
       body: JSON.stringify({ ...form, published }),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error || "Something went wrong"); setLoading(false); return; }
+    if (!res.ok) {
+      setError(data.error || "Terjadi kesalahan");
+      setLoading(false);
+      return;
+    }
     router.push("/dashboard/posts");
   };
 
   return (
-    <div>
+    <div className="animate-fade-up">
       <div className="mb-6">
-        <h1 className="text-xl font-medium text-gray-900">New Post</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Write and publish your article</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Posting Baru</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Tulis dan terbitkan artikel</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-4">
-          <p className="text-sm text-red-500">{error}</p>
+        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 mb-4">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
-      <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-5">
+      <div className="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-light)] p-6 shadow-sm space-y-6">
         {/* Cover Image */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Cover Image</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">
+            Cover Image
+          </label>
           <CoverImageUpload
             value={form.coverImage}
             onChange={(url) => setForm({ ...form, coverImage: url })}
@@ -71,25 +80,29 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Title</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Judul
+          </label>
           <input
             type="text"
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-            placeholder="Your article title..."
+            className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition dark:text-white placeholder:text-gray-400"
+            placeholder="Judul artikel Anda..."
             value={form.title}
             onChange={handleTitleChange}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Slug</label>
-          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:border-gray-400 transition-colors">
-            <span className="px-3 py-2.5 text-xs text-gray-300 bg-gray-50 border-r border-gray-200">
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Slug
+          </label>
+          <div className="flex items-center bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/50">
+            <span className="px-3 py-2.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
               moreno.blog/blog/
             </span>
             <input
               type="text"
-              className="flex-1 px-3 py-2.5 text-sm focus:outline-none placeholder-gray-300"
+              className="flex-1 px-3 py-2.5 text-sm focus:outline-none bg-transparent dark:text-white placeholder:text-gray-400"
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
             />
@@ -97,45 +110,49 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Excerpt</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Cuplikan (Excerpt)
+          </label>
           <input
             type="text"
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
-            placeholder="Short description of your article..."
+            className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white placeholder:text-gray-400"
+            placeholder="Deskripsi singkat artikel..."
             value={form.excerpt}
             onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Content</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Konten
+          </label>
           <RichTextEditor
             content={form.content}
             onChange={(content) => setForm({ ...form, content })}
           />
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[var(--border-light)]">
           <button
             onClick={() => router.back()}
-            className="text-sm text-gray-400 hover:text-gray-900 transition-colors"
+            className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition"
           >
-            Cancel
+            Batal
           </button>
           <div className="flex gap-3">
             <button
               onClick={() => handleSubmit(false)}
               disabled={loading}
-              className="text-sm border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-700"
+              className="text-sm border border-gray-300 dark:border-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-50 text-gray-700 dark:text-gray-300"
             >
-              Save Draft
+              Simpan sebagai Draf
             </button>
             <button
               onClick={() => handleSubmit(true)}
               disabled={loading}
-              className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              className="text-sm bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-5 py-2 rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-sm disabled:opacity-50"
             >
-              {loading ? "Publishing..." : "Publish"}
+              {loading ? "Menerbitkan..." : "Terbitkan"}
             </button>
           </div>
         </div>

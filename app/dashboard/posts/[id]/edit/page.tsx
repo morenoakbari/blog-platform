@@ -7,8 +7,8 @@ import CoverImageUpload from "@/components/CoverImageUpload";
 const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
   ssr: false,
   loading: () => (
-    <div className="border border-gray-200 rounded-lg h-48 flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
+    <div className="border border-gray-200 dark:border-gray-800 rounded-2xl h-48 flex items-center justify-center bg-[var(--card-bg)]">
+      <div className="w-5 h-5 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin" />
     </div>
   ),
 });
@@ -30,7 +30,10 @@ export default function EditPostPage() {
   useEffect(() => {
     fetch(`/api/posts/${id}`)
       .then((r) => r.json())
-      .then((d) => { setForm(d); setFetching(false); });
+      .then((d) => {
+        setForm(d);
+        setFetching(false);
+      });
   }, [id]);
 
   const handleSubmit = async (published: boolean) => {
@@ -43,23 +46,26 @@ export default function EditPostPage() {
     router.push("/dashboard/posts");
   };
 
-  if (fetching) return (
-    <div className="flex items-center justify-center py-20">
-      <div className="w-5 h-5 border-2 border-gray-200 border-t-black rounded-full animate-spin" />
-    </div>
-  );
+  if (fetching)
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin" />
+      </div>
+    );
 
   return (
-    <div>
+    <div className="animate-fade-up">
       <div className="mb-6">
-        <h1 className="text-xl font-medium text-gray-900">Edit Post</h1>
-        <p className="text-sm text-gray-400 mt-0.5">Update your article</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Post</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Update artikel Anda</p>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-xl p-6 space-y-5">
+      <div className="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-light)] p-6 shadow-sm space-y-6">
         {/* Cover Image */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Cover Image</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">
+            Cover Image
+          </label>
           <CoverImageUpload
             value={form.coverImage}
             onChange={(url) => setForm({ ...form, coverImage: url })}
@@ -67,24 +73,28 @@ export default function EditPostPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Title</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Judul
+          </label>
           <input
             type="text"
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+            className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition dark:text-white"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Slug</label>
-          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:border-gray-400 transition-colors">
-            <span className="px-3 py-2.5 text-xs text-gray-300 bg-gray-50 border-r border-gray-200">
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Slug
+          </label>
+          <div className="flex items-center bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/50">
+            <span className="px-3 py-2.5 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
               moreno.blog/blog/
             </span>
             <input
               type="text"
-              className="flex-1 px-3 py-2.5 text-sm focus:outline-none"
+              className="flex-1 px-3 py-2.5 text-sm focus:outline-none bg-transparent dark:text-white"
               value={form.slug}
               onChange={(e) => setForm({ ...form, slug: e.target.value })}
             />
@@ -92,42 +102,50 @@ export default function EditPostPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Excerpt</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Cuplikan (Excerpt)
+          </label>
           <input
             type="text"
-            className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors"
+            className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:text-white"
             value={form.excerpt}
             onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Content</label>
+          <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+            Konten
+          </label>
           <RichTextEditor
             content={form.content}
             onChange={(content) => setForm({ ...form, content })}
           />
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[var(--border-light)]">
           <div className="flex items-center gap-2">
-            <div className={`w-1.5 h-1.5 rounded-full ${form.published ? "bg-green-400" : "bg-amber-400"}`} />
-            <span className="text-xs text-gray-400">{form.published ? "Published" : "Draft"}</span>
+            <div
+              className={`w-2 h-2 rounded-full ${form.published ? "bg-emerald-500" : "bg-amber-500"}`}
+            />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {form.published ? "Terbit" : "Draf"}
+            </span>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => handleSubmit(false)}
               disabled={loading}
-              className="text-sm border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors text-gray-700"
+              className="text-sm border border-gray-300 dark:border-gray-700 px-5 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-50 text-gray-700 dark:text-gray-300"
             >
-              Save as Draft
+              Simpan sebagai Draf
             </button>
             <button
               onClick={() => handleSubmit(true)}
               disabled={loading}
-              className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              className="text-sm bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-5 py-2 rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-sm disabled:opacity-50"
             >
-              {loading ? "Saving..." : "Update & Publish"}
+              {loading ? "Menyimpan..." : "Update & Terbitkan"}
             </button>
           </div>
         </div>

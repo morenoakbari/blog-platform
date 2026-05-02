@@ -19,78 +19,107 @@ export default function RegisterPage() {
       body: JSON.stringify(form),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error); setLoading(false); return; }
+    if (!res.ok) {
+      setError(data.error);
+      setLoading(false);
+      return;
+    }
     router.push("/login");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md animate-fade-up">
+        {/* Logo & Header */}
         <div className="text-center mb-8">
-          <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-lg font-semibold">B</span>
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <span className="text-white text-xl font-bold">B</span>
           </div>
-          <h1 className="text-xl font-medium text-gray-900">Buat akun baru</h1>
-          <p className="text-sm text-gray-400 mt-1">Mulai menulis hari ini</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            Buat akun baru
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Mulai menulis hari ini
+          </p>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+        {/* Card Form */}
+        <div className="bg-[var(--card-bg)] rounded-2xl border border-[var(--border-light)] p-6 sm:p-8 shadow-sm">
           {error && (
-            <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-4">
-              <p className="text-sm text-red-500">{error}</p>
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 mb-5">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Nama lengkap</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
+                Nama lengkap
+              </label>
               <input
                 type="text"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
+                className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition dark:text-white placeholder:text-gray-400"
                 placeholder="Moreno Akbari"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
-                suppressHydrationWarning
               />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Email</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
+                Email
+              </label>
               <input
                 type="email"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
+                className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition dark:text-white placeholder:text-gray-400"
                 placeholder="anda@email.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
-                suppressHydrationWarning
               />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1.5">Kata sandi</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
+                Kata sandi
+              </label>
               <input
                 type="password"
-                className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-300"
+                className="w-full bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition dark:text-white placeholder:text-gray-400"
                 placeholder="Minimal 8 karakter"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
-                suppressHydrationWarning
               />
             </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors mt-2"
+              className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 disabled:opacity-50 transition shadow-sm mt-3"
             >
-              {loading ? "Membuat akun..." : "Daftar"}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Membuat akun...
+                </span>
+              ) : (
+                "Daftar"
+              )}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-sm text-gray-400 mt-4">
+        {/* Footer Link */}
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
           Sudah punya akun?{" "}
-          <Link href="/login" className="text-gray-900 underline underline-offset-2">Masuk</Link>
+          <Link
+            href="/login"
+            className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+          >
+            Masuk
+          </Link>
         </p>
       </div>
     </div>
