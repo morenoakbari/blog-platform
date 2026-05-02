@@ -4,6 +4,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import SearchUser from "@/components/SearchUser";
+
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
@@ -24,14 +26,16 @@ export default async function HomePage() {
             </div>
             <span className="font-medium text-gray-900">blog-platform</span>
           </Link>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link
-              href="/"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
+
+          {/* Search — tengah */}
+          <div className="flex-1 max-w-xs hidden sm:block">
+            <SearchUser />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm text-gray-500 hover:text-gray-900 transition-colors hidden sm:block">
               Artikel
             </Link>
-
             {session?.user && (
               <Link
                 href={`/profile/${(session.user as any).username ?? session.user.id}`}
@@ -40,11 +44,7 @@ export default async function HomePage() {
                 Profile
               </Link>
             )}
-
-            <Link
-              href="/dashboard"
-              className="text-sm bg-black text-white px-3 py-1.5 rounded-md hover:bg-gray-800 transition-colors"
-            >
+            <Link href="/dashboard" className="text-sm bg-black text-white px-3 py-1.5 rounded-md hover:bg-gray-800 transition-colors">
               Dashboard
             </Link>
           </div>
@@ -69,41 +69,49 @@ export default async function HomePage() {
         ) : (
           <div className="divide-y divide-gray-100">
             {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="group flex flex-col sm:flex-row justify-between items-start gap-4 py-6 hover:opacity-70 transition-opacity"
-              >
-                <div className="flex-1 min-w-0 w-full">
-                  {post.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {post.categories.map((cat) => (
-                        <span key={cat.id} className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">
-                          {cat.name}
-                        </span>
-                      ))}
+              <div key={post.id} className="py-6 border-b border-gray-100">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="group flex flex-col sm:flex-row justify-between items-start gap-4 hover:opacity-70 transition-opacity"
+                >
+                  <div className="flex-1 min-w-0 w-full">
+                    {post.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {post.categories.map((cat) => (
+                          <span key={cat.id} className="text-xs bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">
+                            {cat.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="font-medium text-gray-900 mb-1.5 leading-snug group-hover:text-gray-600 transition-colors">
+                      {post.title}
+                    </p>
+                    {post.excerpt && (
+                      <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{post.excerpt}</p>
+                    )}
+                  </div>
+
+                  {post.coverImage && (
+                    <div className="shrink-0 w-full sm:w-24 h-20 sm:h-16 rounded-lg overflow-hidden bg-gray-100">
+                      <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
                     </div>
                   )}
-                  <p className="font-medium text-gray-900 mb-1.5 leading-snug group-hover:text-gray-600 transition-colors">
-                    {post.title}
-                  </p>
-                  {post.excerpt && (
-                    <p className="text-sm text-gray-400 line-clamp-2 leading-relaxed">{post.excerpt}</p>
-                  )}
-                  <p className="text-xs text-gray-300 mt-2">
-                    {new Date(post.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric", month: "short", year: "numeric",
-                    })} · {post.author.name}
-                  </p>
-                </div>
+                </Link>
 
-                {/* Cover Image Thumbnail */}
-                {post.coverImage && (
-                  <div className="shrink-0 w-full sm:w-24 h-20 sm:h-16 rounded-lg overflow-hidden bg-gray-100">
-                    <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </Link>
+                {/* Author — di luar Link utama biar tidak nested */}
+                <p className="text-xs text-gray-300 mt-2">
+                  {new Date(post.createdAt).toLocaleDateString("id-ID", {
+                    day: "numeric", month: "short", year: "numeric",
+                  })} ·{" "}
+                  <Link
+                    href={`/profile/${(post.author as any).username ?? post.author.id}`}
+                    className="hover:text-gray-600 transition-colors"
+                  >
+                    {post.author.name}
+                  </Link>
+                </p>
+              </div>
             ))}
           </div>
         )}

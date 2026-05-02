@@ -101,16 +101,21 @@ export default async function BlogDetailPage({
 
         {/* Author */}
         <div className="flex flex-wrap items-center gap-3 pb-8 border-b border-gray-100 mb-8">
-          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-            <span className="text-white text-xs font-medium">
-              {post.author.name?.charAt(0).toUpperCase()}
-            </span>
-          </div>
+          <Link href={`/profile/${(post.author as any).username ?? post.author.id}`}>
+            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:opacity-80 transition-opacity">
+              <span className="text-white text-xs font-medium">
+                {post.author.name?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          </Link>
 
           <div>
-            <p className="text-sm font-medium text-gray-900">
+            <Link
+              href={`/profile/${(post.author as any).username ?? post.author.id}`}
+              className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
+            >
               {post.author.name}
-            </p>
+            </Link>
 
             <p className="text-xs text-gray-400">
               {new Date(post.createdAt).toLocaleDateString("id-ID", {
